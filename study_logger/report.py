@@ -34,15 +34,18 @@ def weekly_totals(sessions: Iterable[Session], day: date) -> list[tuple[str, flo
     )
 
 
+def format_number(minutes: float) -> str:
+    """Render a minute count without a trailing ``.0`` (``45``, ``37.5``)."""
+    if float(minutes).is_integer():
+        return str(int(minutes))
+    return f"{minutes:.2f}".rstrip("0").rstrip(".")
+
+
 def format_minutes(minutes: float) -> str:
     """Render minutes as e.g. ``90 min (1h 30m)``."""
-    if float(minutes).is_integer():
-        exact = str(int(minutes))
-    else:
-        exact = f"{minutes:.2f}".rstrip("0").rstrip(".")
     rounded = int(minutes + 0.5)
     hours, mins = divmod(rounded, 60)
-    return f"{exact} min ({hours}h {mins:02d}m)"
+    return f"{format_number(minutes)} min ({hours}h {mins:02d}m)"
 
 
 def format_report(sessions: Iterable[Session], day: date) -> str:
