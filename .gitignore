@@ -1,0 +1,12 @@
+# Python virtual environment
+.venv/
+
+# Python bytecode cache
+__pycache__/
+
+# pytest cache
+.pytest_cache/
+
+# Study session data (stored as JSON Lines)
+*.jsonl
+sessions.jsonl
