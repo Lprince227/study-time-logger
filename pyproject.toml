@@ -1,0 +1,9 @@
+[project]
+name = "study-time-logger"
+version = "0.1.0"
+description = "Log study sessions per course and report weekly totals."
+requires-python = ">=3.10"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
