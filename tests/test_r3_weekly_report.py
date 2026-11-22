@@ -88,7 +88,7 @@ def test_r3_report_command_output(tmp_path, capsys):
     code, lines = report(data, capsys, "--week", "2026-11-18")
 
     assert code == 0
-    assert lines == [
+    assert lines[:4] == [  # R5's Not Studied section follows; see test_r5_*
         "Week of 2026-11-16 to 2026-11-22",
         "CS101: 90 min (1h 30m)",
         "History: 30 min (0h 30m)",
@@ -118,7 +118,7 @@ def test_r3_report_empty_week(tmp_path, capsys):
     code, lines = report(data, capsys, "--week", "2026-10-01")
 
     assert code == 0
-    assert lines == [
+    assert lines[:2] == [  # R5's Not Studied section follows; see test_r5_*
         "Week of 2026-09-28 to 2026-10-04",
         "No study sessions recorded this week.",
     ]
@@ -129,4 +129,4 @@ def test_r3_report_with_no_data_file(tmp_path, capsys):
     code, lines = report(tmp_path / "missing.jsonl", capsys)
 
     assert code == 0
-    assert lines[-1] == "No study sessions recorded this week."
+    assert lines[1] == "No study sessions recorded this week."
