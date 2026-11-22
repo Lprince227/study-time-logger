@@ -1,4 +1,4 @@
-"""Weekly per-course report (R3)."""
+"""Weekly per-course report (R3) with its "Not Studied" section (R5)."""
 
 from datetime import date, timedelta
 from typing import Iterable
@@ -34,6 +34,28 @@ def weekly_totals(sessions: Iterable[Session], day: date) -> list[tuple[str, flo
     )
 
 
+def not_studied(sessions: Iterable[Session], day: date) -> list[str]:
+    """Courses logged before the week containing ``day`` but not during it (R5).
+
+    Sessions after the week are ignored. Courses are matched case-insensitively,
+    shown with their earliest stored spelling, and sorted A-Z ignoring case.
+    """
+    start, end = week_bounds(day)
+    earlier: dict[str, str] = {}
+    this_week: set[str] = set()
+    for s in sessions:
+        name = s.course.strip()
+        key = name.casefold()
+        if s.day < start:
+            earlier.setdefault(key, name)
+        elif s.day <= end:
+            this_week.add(key)
+    return sorted(
+        (name for key, name in earlier.items() if key not in this_week),
+        key=str.casefold,
+    )
+
+
 def format_number(minutes: float) -> str:
     """Render a minute count without a trailing ``.0`` (``45``, ``37.5``)."""
     if float(minutes).is_integer():
@@ -50,6 +72,7 @@ def format_minutes(minutes: float) -> str:
 
 def format_report(sessions: Iterable[Session], day: date) -> str:
     """Build the full report text for the week containing ``day``."""
+    sessions = list(sessions)  # read twice: weekly totals and Not Studied
     start, end = week_bounds(day)
     lines = [f"Week of {start.isoformat()} to {end.isoformat()}"]
     totals = weekly_totals(sessions, day)
@@ -58,4 +81,13 @@ def format_report(sessions: Iterable[Session], day: date) -> str:
     else:
         lines.extend(f"{course}: {format_minutes(total)}" for course, total in totals)
         lines.append(f"Total: {format_minutes(sum(t for _, t in totals))}")
+
+    lines += ["", "Not Studied"]
+    neglected = not_studied(sessions, day)
+    if neglected:
+        lines.extend(f"{course}: {format_minutes(0)}" for course in neglected)
+    elif any(s.day < start for s in sessions):
+        lines.append("None - every course was studied this week.")
+    else:
+        lines.append("None - no courses were logged in earlier weeks.")
     return "\n".join(lines)
