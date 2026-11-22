@@ -2,8 +2,9 @@
 
 A small command-line tool for college students taking several courses. You log
 each study session (course + minutes) from the terminal, and at any time you
-can print how many minutes you spent on each course in a given week. That makes
-it obvious which classes you are neglecting before deadlines arrive.
+can print how many minutes you spent on each course in a given week. The report
+also has a "Not Studied" section listing courses you studied in earlier weeks
+but not this week, so neglected classes stand out before deadlines arrive.
 
 Sessions are saved in a plain text file (`sessions.jsonl`, one JSON object per
 line) so they persist between runs. Invalid input such as negative or
@@ -30,7 +31,8 @@ py -m study_logger report --week 2026-11-10
 
 - `log COURSE MINUTES [--date YYYY-MM-DD]` records a session (default date: today).
 - `report [--week YYYY-MM-DD]` shows totals per course for the Monday–Sunday
-  week containing that date (default: this week).
+  week containing that date (default: this week), followed by the courses
+  logged in earlier weeks that have no sessions that week.
 - `--file PATH` (placed before `log`/`report`) uses a different data file
   instead of `sessions.jsonl` in the current folder.
 
@@ -41,6 +43,9 @@ Week of 2026-11-16 to 2026-11-22
 CS101: 90 min (1h 30m)
 History: 30 min (0h 30m)
 Total: 120 min (2h 00m)
+
+Not Studied
+Biology: 0 min (0h 00m)
 ```
 
 ## Setting up a virtual environment and test requirements
@@ -67,4 +72,4 @@ python -m pip install -r requirements-dev.txt
 py -m pytest
 ```
 
-Every test names the requirement (R1–R4) it checks.
+Every test names the requirement (R1–R5) it checks.
