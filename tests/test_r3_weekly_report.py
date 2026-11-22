@@ -106,8 +106,9 @@ def test_r3_report_defaults_to_current_week(tmp_path, capsys):
 
     assert code == 0
     assert lines[0] == "Week of 2026-11-16 to 2026-11-22"
-    assert "CS101: 45 min (0h 45m)" in lines
-    assert not any(line.startswith("History") for line in lines)
+    weekly_lines = lines[: lines.index("Not Studied")]  # R5 lists History there
+    assert "CS101: 45 min (0h 45m)" in weekly_lines
+    assert not any(line.startswith("History") for line in weekly_lines)
 
 
 def test_r3_report_empty_week(tmp_path, capsys):
