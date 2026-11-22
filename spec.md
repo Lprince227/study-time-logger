@@ -1,4 +1,4 @@
-# Study Time Logger — Specification (round 1)
+# Study Time Logger — Specification (round 2)
 
 A command-line tool for college students to log how long they study each
 course and see a weekly total per course, so neglected courses become visible
@@ -72,6 +72,59 @@ errors (unknown command, missing argument — produced by `argparse`).
 
 - If the week has no sessions, it prints the week header followed by
   `No study sessions recorded this week.`
+- The report always ends with the "Not Studied" section described in R5.
+
+## R5 — "Not Studied" section for neglected courses
+
+*Added in round 2.* The weekly report ends with a section titled
+`Not Studied`. It lists courses that were studied before this week but have
+no sessions this week.
+
+- A course is **not studied** when it has at least one session dated before
+  the Monday of the reported week and no session inside the reported week.
+  Every earlier week counts, not only the previous one. Sessions dated after
+  the reported week are ignored, so a report for a past week only looks at
+  history from before that week.
+- Courses are matched the same way as in R3: case-insensitively after
+  trimming whitespace. A course studied this week under any spelling is not
+  listed.
+- Each course is shown with zero minutes in the R3 line format
+  (`History: 0 min (0h 00m)`). The name uses the spelling of the earliest
+  stored session for that course.
+- Courses are listed alphabetically (case-insensitive).
+- The section comes after the `Total:` line (or after
+  `No study sessions recorded this week.`). A blank line separates it from the
+  lines above it. Not-studied courses do not change the `Total:` line.
+- The heading is always printed. If no course qualifies, one line comes after
+  it:
+  - `None - every course was studied this week.` when earlier courses exist
+    and all of them were studied this week;
+  - `None - no courses were logged in earlier weeks.` when no session is dated
+    before the reported week.
+
+Example (Biology and History were studied in earlier weeks but not this
+week):
+
+```
+Week of 2026-11-16 to 2026-11-22
+CS101: 90 min (1h 30m)
+Total: 90 min (1h 30m)
+
+Not Studied
+Biology: 0 min (0h 00m)
+History: 0 min (0h 00m)
+```
+
+Example (a week with no sessions):
+
+```
+Week of 2026-11-23 to 2026-11-29
+No study sessions recorded this week.
+
+Not Studied
+CS101: 0 min (0h 00m)
+History: 0 min (0h 00m)
+```
 
 ## R4 — Reject invalid input
 
@@ -87,7 +140,7 @@ nothing is written to the data file.
 | `COURSE` empty or only spaces | no course | `Error: course name must not be empty.` |
 | `--date` / `--week` not a valid `YYYY-MM-DD` date | bad date | `Error: date must be in YYYY-MM-DD format, got '2026-13-01'.` |
 
-## Out of scope for round 1
+## Out of scope (rounds 1 and 2)
 
 Editing or deleting sessions, start/stop timers, multiple users, reports over
 ranges other than a single week.
